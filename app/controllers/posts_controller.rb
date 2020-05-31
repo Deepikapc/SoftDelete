@@ -16,11 +16,9 @@ class PostsController < ApplicationController
 	def create
 		@post = Post.new(post_params)
 		 if @post.save
-		 	render json: {message:" Post created successfully!"},status: :ok
-		 	#redirect_to posts_path
+		 	render json: {message:" Post created successfully!"},status: :ok	
 		 else
-		 	render :json => {status:false}
-		 	#render new_post_path
+		 	render :json => {status:false}		 
 		 end	
   end
 
@@ -58,13 +56,11 @@ class PostsController < ApplicationController
   	if @post.present?
 	  	if params["is_soft_delete"]  == "false" #hard delete
 	  		@post.destroy
-	  		redirect_to posts_path
-	  		puts "*****INSIDE IF ********"
+	  		redirect_to posts_path  		
 	  	elsif params["is_soft_delete"] == "true" #soft destroy
 	  		puts "inside else"
 	  		soft_destroy_logic @post
-	  		redirect_to posts_path
-	  		#render :json => {status:true}
+	  		redirect_to posts_path		
 	  	else
 	  		render :json => {status:false}
 	  	end

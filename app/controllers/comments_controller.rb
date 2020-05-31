@@ -27,15 +27,8 @@ class CommentsController < ApplicationController
     if @comment.present?
 	    if params["is_soft_delete"]  == false #hard delete
 	  		@comment.destroy
-	  		#redirect_to posts_path
-	  		puts "*****INSIDE IF ********" 
 	  	elsif params["is_soft_delete"] == true
-	  		puts "comment soft destroyyyyyyyy"
 	  	  soft_destroy_logic @comment
-	  		# redirect_to posts_path
-	  		#render :json => {:status => true}
-	  	# else
-	  	# 	render :json => {:status => false}
 	  	end
   	end
   	redirect_to posts_path
