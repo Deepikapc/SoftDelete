@@ -1,0 +1,60 @@
+<div class ="container">
+	<div class="row" >
+		<%if @posts.length == 0%>
+			<h3>No trashed post found</h3>
+		<%else%>
+			<%@posts.each do |post|%>
+				<div class="col-md-4">
+				<div class="panel panel-info">
+					<div class="panel panel-heading">
+						<%= post.title%>
+					</div>
+					<div class="panel panel-body">
+						<%=post.body.split(' ' )[0..20].join(' ')%> <%= link_to 'Read More',post_path(post.id)%><br/>
+             <input type="hidden" name="" value="<%= post.is_soft_delete%>" id="is_soft_delete">
+             <input type="hidden" name="" value="<%= post.id%>" id="post_id">
+						<button id="restore" onclick="restore_function('<%= post.id%>')" class= "btn btn-success btn-cons" >Restore</button>
+						<button id="cancel" class= "btn btn-danger btn-cons" onclick = "goBack();" >Cancel</button>
+					</div>
+				</div>
+				</div>
+			<%end%>
+		<%end%>
+	</div>
+</div>
+
+<script>	
+	function restore_function(post_id){
+		var is_soft_delete = $('#is_soft_delete').val();
+		var post_id = $('#post_id').val();
+		// alert("hii");
+		var data = {
+      "is_soft_delete": false,
+      "post_id": post_id
+    };
+		
+		$.ajax({
+    	url: "/list_restored_post/",
+    	type: "GET",
+    	data: data,
+    	success: function(data) {
+    		alert("Restored");
+    		location.reload();    			
+    	},
+    	error: function(error) {
+    		alert(error);
+    	}
+    });	
+	}
+
+	function goBack() {
+  	window.history.back();
+	}
+		
+</script>
+
+<style>
+	.container {
+		margin-top: 10px;
+	}
+</style>

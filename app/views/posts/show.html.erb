@@ -1,0 +1,196 @@
+<div class="container">
+	<div class="row"> 
+		<div class="col-sm-8">
+			<div class="panel panel-info">
+    		<div class="panel-heading">Post Details</div>
+  			<div class="panel-body">
+        	<div class="jumbotron post_del" >
+            <%= @post.try(:title) %> <br/>
+            <%= @post.body %>
+        		<%= link_to "Destroy",post_path(@post.id) ,method: :delete,class: "btn btn-default soft",remote:true ,onclick: "post_soft_hard_delete(#{@post.id},true)" %>	
+        		<%= link_to "Delete",post_path(@post.id) ,method: :delete, data:{confirm: "Are you sure?"} ,class: "btn btn-danger hard",onclick: "post_soft_hard_delete(#{@post.id},false)"%>
+            <%= link_to "Edit",edit_post_path(@post.id) ,class: " btn btn-info  btn-cons btn-xs" %>
+        	</div>
+
+          <% if @post.blank? %>
+            <h3>No comments has been added yet,Would you lik to add the first?</h3>
+          <% else %>
+            <div class="jumbotron comments"> 
+              <label>Comments:</label>
+              <% @post.load_comments.each do |c| %>   
+                <div class="comment_delete">            
+                  <%= c.body %>   
+                  <input type="hidden" name="" value="<%= c.id%>" id="comment_id">
+                  <%= link_to "Destroy",comment_path(c.id),method: :delete, class: "btn btn-default soft_comment" ,onclick:"comment_soft_hard_delete(#{c.id},true)"%>
+                  <%= link_to "Delete",comment_path(c.id),method: :delete, data:{confirm: "Are you sure?"} ,class: "btn btn-danger hard_comment" ,onclick:"comment_soft_hard_delete(#{c.id},false)"%>	
+                  <%#= link_to "Edit",edit_comment_path(c.id) ,class: " btn btn-info  btn-cons btn-xs" %>	
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+  			</div>
+
+  			<div class="panel panel-info">
+				  <div class="panel-heading">Add Comments</div>
+				  <div class="panel-body">
+				    <div class='form-group', id='<%= @post.id%>'>
+							<div class="row">
+  		      		<div class="col-sm-5">			
+  							  <textarea class="form-control" rows="5" id="comment"></textarea>
+  							</div>
+						  </div>		
+						</div>	
+							
+						<input type="hidden" name="" value= "<%= @post.id %>" id="post_id">
+						<div class="form-group" >
+							<button id="save", class= "btn btn-success btn-cons" >Save</button>
+							<%= link_to 'Cancel',posts_path , class: "btn btn-danger btn-cons" %>
+						</div	
+				  </div>
+    		</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+  $( document ).ready(function() {
+  	var post_id = $("#post_id").val();
+      console.log( "ready!" );
+      $("#save").on('click',function(){
+      	console.log("save!");
+      	
+      	var comment = {
+      		"body": $("#comment").val(),
+      		"post_id": $("#post_id").val()
+      	};
+
+      
+      	$.ajax({
+  	     url: "/comments",
+  	     type: "POST",
+  	     data: JSON.stringify(comment),
+  	     dataType: 'json',
+  	     contentType: "application/json;charset=utf-8",
+  	     success: function(data){ 
+  	     	console.log("success data");
+  	     	// $(".comments").append("<div>"+$('#comment').val() + '<input type="button" value="Destroy" class="btn btn-default soft_comment" id="soft_comment_del">'+'<input type="button" value="Delete" class="btn btn-danger">' +"</div>");
+
+            $(".comments").append("<div>"+$('#comment').val() + '<input type="button" value="Destroy" class="btn btn-default soft_comment" id="soft_comment_del">'+'<input type="button" value="Delete" class="btn btn-danger">'+'<input type="button" value="Edit" class=" btn btn-info  btn-cons btn-xs">' +"</div>");
+  	     	$("#comment").val("");
+  	     },
+  	     error: function(data) {
+  	     	alert("error saving comment!");
+  	     	console.log(data);
+  	     }
+    		});
+      });
+  });
+	
+  function post_soft_hard_delete(post_id,is_delete){
+    alert("hiii");
+    console.log(post_id)
+    // var is_soft_delete = is_delete
+    console.log(is_delete);
+    var data = {
+      "is_soft_delete": is_delete
+    };
+
+    $.ajax({
+      url: "/posts/"+post_id,
+      type:"DELETE",
+      data: data,
+      success: function(data) {
+        alert("Record has been hard deleted!");
+        $('.post_del').val("");
+        $('.comment_delete').val("");
+      },
+      error: function(error) {
+        alert(error);
+      }
+    }); 
+  }
+
+  function comment_soft_hard_delete(comment_id,is_delete){
+    // var comment_id = $('#comment_id').val();
+    console.log(comment_id);
+    var data = {
+      "is_soft_delete": is_delete
+    };
+
+    $.ajax({
+      url: "/comments/"+comment_id,
+      type: "DELETE",
+      data: JSON.stringify(data),
+      dataType: 'json',
+      contentType: "application/json;charset=utf-8",
+      success: function(){
+        alert("Comment has been soft deleted!");
+        $(".comment_hide").val("");
+      },
+      error: function(){
+        console.log("error")
+          alert("errorrrrr");
+      },
+    });
+
+  }
+
+</script>
+<style>
+	.btn-danger {
+    color: #fff;
+    background-color: #d9534f;
+    /* border-color: #d43f3a; */
+  }
+
+  .btn {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.btn1 {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+</style>

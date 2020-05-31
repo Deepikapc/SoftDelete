@@ -1,0 +1,36 @@
+<div class="row post_data">
+		
+<%@posts.each do |post|%>
+			<div class="col-md-4">
+				<div class="panel panel-info">
+					<div class="panel panel-heading">
+					  <input type="hidden" name="" value="<%= post.id%>" id="post_id">
+						<%= post.title%>
+					</div>
+					<div class="panel panel-body post_body">
+						<%= post.body.split(' ' )[0..20].join(' ') %> <%= link_to 'Read More',post_path(post.id)%>
+					</div>
+				</div>
+			</div>
+		<%end%>
+		
+		
+	</div>
+
+<script>
+//show page via ajax:
+  $( document ).ready(function() {
+  	var post_id = $('#post_id').val();
+  	var post_body = $('.post_body').val();
+		$('.show_page').on('click',function(){
+     	console.log(post_id);
+     	console.log(post_body)
+			var post = {
+    		"post_id": $("#post_id").val(),
+    		"post_body": $(".post_body").val()
+    	};
+
+
+		});
+	});	
+</script>

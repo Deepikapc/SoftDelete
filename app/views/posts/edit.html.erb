@@ -1,0 +1,75 @@
+<div class ="container">
+  <div class="row">
+		<div class="col-md-4 append_new_form ">
+		 <!--  <button id="save", class= "btn btn-success btn-cons" >New Post</button> -->
+			<%#= link_to "New Post",new_post_path ,class:"btn btn-primary btn-cons new_post_form", remote: true%>
+      <input type="hidden" name="" value="<%= @post.id%>" id="post_id">
+			<div class = "form-group" %>
+	  		<label for="title">Title:</label>
+				<input type="text" name="title" class="form-control" id="title" value="<%=@post.title%>">
+			</div>
+
+			<div class = "form-group" %>
+			  <label for="body">Body:</label>
+				<textarea class="form-control" rows="5" id="post_body" value=""><%= @post.body %></textarea>
+			</div>	
+			<div class="form-group">
+			<label for="body">comment:</label>
+			<textarea class="form-control" rows="5" id="comment_body" value=""><%= @post.load_comments.map{|c| c.body}.join(',') %></textarea>
+			</div>
+
+			<div class="form-group" >
+				<button id="save", class= "btn btn-success btn-cons" >Save</button>
+				<%= link_to 'Cancel','#',:onclick => "goBack();", class: "btn btn-danger btn-cons" %>
+			</div>	
+
+			<%#= link_to "Trash",get_trash_post_path ,class:"btn btn-primary btn-cons post_trash"%>
+		</div>
+	</div>
+
+<script>
+	$( document ).ready(function() {
+		var post_id = $("#post_id").val();
+		var title = $("#title").val();
+		console.log (title);
+    console.log( "ready!" );
+    $("#save").on('click',function(){
+    	console.log("save!");
+    	var post = {
+    		"title": $("#title").val(),
+    		"body": $("#post_body").val()
+    		// "comment_body": $('#comment_body').val()
+    	};
+
+    	$.ajax({
+    		url: "/posts/"+post_id,
+    		type: "PUT",
+    		data: JSON.stringify(post),
+    		dataType: 'json',
+	      contentType: "application/json;charset=utf-8",
+	      success: function(data){
+	      	console.log("POST DATA!!");
+	      	// $(".post_data").append("<div>" + $('#title').val() + $('#post_body').val() + "</div>");
+	      	// $(".post_data").append("<div class=panel panel-info>" + "<div class=panel panel-heading>"+ $('#title').val()+"</div>" + "<div class=panel panel-body>" + $('#post_body').val()+ "</div>" + "</div>");
+	      	
+	      	reload_page_again();
+	      },
+	      error: function(){
+	      	alert("error!");
+
+	      },
+    	});
+    });
+  }); 
+  
+function reload_page_again(){
+		console.log('check more reload');
+	  $.get( "/index_reload", function(result) {
+	 	 $(".post_data").html(result);
+		});
+}
+
+function goBack() {
+  window.history.back();
+}
+</script>
