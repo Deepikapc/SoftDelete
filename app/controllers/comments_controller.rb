@@ -28,10 +28,11 @@ class CommentsController < ApplicationController
 	    if params["is_soft_delete"]  == false #hard delete
 	  		@comment.destroy
 	  	elsif params["is_soft_delete"] == true
-	  	  soft_destroy_logic @comment
+	  	  #soft_destroy_logic @comment
 	  	end
   	end
-  	redirect_to posts_path
+  		render :json => {:status => true}
+  	#redirect_to posts_path
   end
 
   private
